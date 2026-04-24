@@ -14,15 +14,15 @@ const resenaSchema = mongoose.Schema({
       min: [1, 'La calificación mínima es 1'],
       max: [5, 'La calificación máxima es 5'],
     },
-    autor: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Usuario',
+      ref: 'User',
       required: true,
     },
   },
 
   { timestamps: true }
-  
+
 )
 
 module.exports = mongoose.model('Resena', resenaSchema)

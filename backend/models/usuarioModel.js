@@ -1,8 +1,6 @@
 const mongoose = require('mongoose')
-const bcrypt = require('bcryptjs')
 
-const usuarioSchema = mongoose.Schema(
-  {
+const userSchema = mongoose.Schema({
     nombre: {
       type: String,
       required: [true, 'Ingrese su nombre'],
@@ -13,27 +11,15 @@ const usuarioSchema = mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, 'Ingrese contrasena'],
+      required: [true, 'Ingrese su contrasena'],
     },
-    rol: {
-      type: String,
-      enum: ['usuario', 'admin'],
-      default: 'usuario',
+    esAdmin: {
+      type: Boolean,
+      default: false
     },
   },
   { timestamps: true }
 )
 
 
-usuarioSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next()
-  const salt = await bcrypt.genSalt(10)
-  this.password = await bcrypt.hash(this.password, salt)
-  next()
-})
-
-usuarioSchema.methods.compararPassword = async function (passwordIngresado) {
-  return await bcrypt.compare(passwordIngresado, this.password)
-}
-
-module.exports = mongoose.model('Usuario', usuarioSchema)
+module.exports = mongoose.model('User', userSchema)

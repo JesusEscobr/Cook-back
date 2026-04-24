@@ -1,89 +1,102 @@
 const asyncHandler = require('express-async-handler')
 const jwt = require('jsonwebtoken')
-const Usuario = require('../models/usuarioModel')
+const bcrypt = require ("bcryptjs")
+const User = require('../models/usuarioModel')
 
-// Helper: generar JWT
-const generarToken = (id) =>
-  jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' })
+//jwt token
+const generarToken = (id) =>{
+  return jwt.sign({id}, process.env.JWT_SECRET, {expiresIn: '10d'})
+}
 
-// @desc    Registrar usuario
-// @route   POST /api/usuarios/registro
-// @access  Public
-const registrarUsuario = asyncHandler(async (req, res) => {
-  const { nombre, email, password, rol } = req.body
+const data =(res,req)=> {
+  res.status(200).json(req.user)
+}
+//registrar
+const register = asyncHandler(async (req, res) => {
+    const {nombre, email, password} = req.body
 
-  const existente = await Usuario.findOne({ email })
-  if (existente) {
-    res.status(400)
-    throw new Error('El email ya está registrado')
-  }
+    if(password !== password2){
+      res.status(400)
+      throw new Error("Las contrasenas no coinciden")
+    }
 
-  const usuario = await Usuario.create({ nombre, email, password, rol })
-  const token = generarToken(usuario._id)
+    if(!nombre || !email || !password || !password2){
+        res.status(400)
+        throw new Error ("No todos los datos fueron ingresados")
+    }
 
-  res.status(201).json({
-    _id: usuario._id,
-    nombre: usuario.nombre,
-    email: usuario.email,
-    rol: usuario.rol,
-    token,
-  })
+    const userExiste = await User.findOne({email})
+    if(userExiste){
+        res.status(400)
+        throw new Error ("Usuario ya existe")
+    }
+    else{
+        const salt = await bcrypt.genSalt(10)
+        const hashedPassword = await bcrypt.hash(password, salt)
+
+        const user = await User.create({
+            nombre,
+            email,
+            password : hashedPassword
+        })
+
+        if (user){
+            res.status(201).json({
+                __id: user.id,
+                nombre: user.nombre,
+                email: user.email,
+                password: user.password
+            })
+        }
+        else{
+            res.status(400)
+            throw new Error ("No se guardaron los datos")
+        }
+    }
+
 })
 
-// @desc    Login usuario
-// @route   POST /api/usuarios/login
-// @access  Public
-const loginUsuario = asyncHandler(async (req, res) => {
+//login
+const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body
+  const user = await User.findOne({email})
 
   if (!email || !password) {
     res.status(400)
     throw new Error('Email y contraseña son obligatorios')
   }
 
-  const usuario = await Usuario.findOne({ email })
-  if (!usuario || !(await usuario.compararPassword(password))) {
+  if (user && (await bcrypt.compare(password, user.password))) {
+    res.status(200).json({
+      _id: user.id,
+      nombre: user,nombre,
+      token: generarToken(user.id)
+    })
+  } else {
     res.status(401)
-    throw new Error('Credenciales inválidas')
+      throw new Error ("Contraseña o email incorrectos")
   }
 
-  const token = generarToken(usuario._id)
-
-  res.json({
-    _id: usuario._id,
-    nombre: usuario.nombre,
-    email: usuario.email,
-    rol: usuario.rol,
-    token,
   })
-})
 
-// @desc    Obtener todos los usuarios
-// @route   GET /api/usuarios
-// @access  Private/Admin
-const getUsuarios = asyncHandler(async (req, res) => {
-  const usuarios = await Usuario.find().select('-password').sort({ createdAt: -1 })
-  res.json(usuarios)
-})
+//eliminar
+const eliminarUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id)
 
-// @desc    Eliminar usuario
-// @route   DELETE /api/usuarios/:id
-// @access  Private/Admin
-const eliminarUsuario = asyncHandler(async (req, res) => {
-  const usuario = await Usuario.findById(req.params.id)
-
-  if (!usuario) {
+  if (!user) {
     res.status(404)
     throw new Error('Usuario no encontrado')
   }
 
-  await usuario.deleteOne()
-  res.json({ message: 'Usuario eliminado correctamente' })
+  if (user.user.toString()!== req.user.id){
+    res.status(403)
+    throw new Error("No estas autorizado para borrar ese usuario")
+  }
+
+  await User.findByIdAndDelete(req.user.id)
+  res.status(200).json({ message: 'Usuario eliminado correctamente'})
 })
 
 module.exports = {
-  registrarUsuario,
-  loginUsuario,
-  getUsuarios,
-  eliminarUsuario,
+register, login, data, eliminarUser
 }
