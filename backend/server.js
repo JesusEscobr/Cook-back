@@ -14,7 +14,6 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({extended:false}))
-app.use(errorHandler)
 app.use('/api/users', require('./routes/usuarioRoutes'))
 app.use('/api/resenas', require('./routes/resenaRoutes'))
 
@@ -30,3 +29,4 @@ app.use('/api/resenas', require('./routes/resenaRoutes'))
 //})
 
 app.listen(port, () => console.log(`servidor iniciado en el puerto ${port}`))
+app.use(errorHandler)
