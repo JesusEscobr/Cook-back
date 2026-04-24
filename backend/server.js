@@ -3,16 +3,19 @@ const dotenv = require('dotenv').config()
 const colors = require('colors')
 const cors = require('cors')
 const connectDB = require('./config/db')
-const {errorHandler } = require('./middleware/errorMiddleware')
+const {errorHandler} = require('./middleware/errorMiddleware')
 const port = process.env.PORT || 5000
+
 
 connectDB()
 
 const app = express()
 
 app.use(cors())
-
-app.use('/api/usuarios', require('./routes/usuarioRoutes'))
+app.use(express.json())
+app.use(express.urlencoded({extended:false}))
+app.use(errorHandler)
+app.use('/api/users', require('./routes/usuarioRoutes'))
 app.use('/api/resenas', require('./routes/resenaRoutes'))
 
 // Ruta raíz
@@ -25,7 +28,5 @@ app.use('/api/resenas', require('./routes/resenaRoutes'))
 //    },
 //  })
 //})
-
-app.use(errorHandler)
 
 app.listen(port, () => console.log(`servidor iniciado en el puerto ${port}`))
