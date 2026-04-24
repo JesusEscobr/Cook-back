@@ -93,7 +93,7 @@ const eliminarUser = asyncHandler(async (req, res) => {
     throw new Error('No estas autorizado para borrar ese usuario')
   }
 
-  await User.findByIdAndDelete(req.user.id)
+  await User.findByIdAndDelete(req.user.email)
   res.status(200).json({ message: 'Usuario eliminado correctamente'})
 })
 
