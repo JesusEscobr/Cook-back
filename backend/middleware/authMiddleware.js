@@ -4,25 +4,25 @@ const User = require('../models/usuarioModel')
 const protect = async(req, res, next) => {
 let token 
 
-if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")){
+if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
 
 try {
-    token = req.headers.authorization.split (" ")[1]
+    token = req.headers.authorization.split (' ')[1]
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
-    req.user = await User.findById(decoded.id).select("-password")
+    req.user = await User.findById(decoded.id).select('-password')
     next()
 
 } catch (error) {
     console.log(error)
     res.status(401)
-    throw new Error ("Acceso no autorizado")
+    throw new Error ('Acceso no autorizado')
 
 }
 }
 
 if (!token){
     res.status(401)
-    throw new Error("No hay token")
+    throw new Error('No hay token')
 }
 }
 

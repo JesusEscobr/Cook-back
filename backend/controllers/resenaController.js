@@ -16,7 +16,7 @@ const getResena = asyncHandler(async (req, res) => {
 
 //crear
 const crearResena = asyncHandler(async (req, res) => {
-  //const { titulo, contenido, calificacion } = req.body
+
   const resena = await Resena.create({
     titulo: req.body.titulo,
     contenido: req.body.contenido,
@@ -27,7 +27,7 @@ const crearResena = asyncHandler(async (req, res) => {
     res.status(201).json(resena)
   } else {
     res.status(500)
-    throw new Error("no se pudo crear la reseña")
+    throw new Error('no se pudo crear la reseña')
   }
 
 })
@@ -56,7 +56,7 @@ const eliminarResena = asyncHandler( async (req, res) => {
 
   if(resena.user.toString() !== req.user.id){
     res.status(401)
-    throw new Error("Usuario no autorizado")
+    throw new Error('Usuario no autorizado')
   }
   else{
     await resena.deleteOne()

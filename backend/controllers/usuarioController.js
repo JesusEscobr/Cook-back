@@ -1,6 +1,6 @@
 const asyncHandler = require('express-async-handler')
 const jwt = require('jsonwebtoken')
-const bcrypt = require ("bcryptjs")
+const bcrypt = require ('bcryptjs')
 const User = require('../models/usuarioModel')
 
 //jwt token
@@ -17,18 +17,18 @@ const register = asyncHandler(async (req, res) => {
 
     if(password !== password2){
       res.status(400)
-      throw new Error("Las contrasenas no coinciden")
+      throw new Error('Las contrasenas no coinciden')
     }
 
     if(!nombre || !email || !password || !password2){
         res.status(400)
-        throw new Error ("No todos los datos fueron ingresados")
+        throw new Error ('No todos los datos fueron ingresados')
     }
 
     const userExiste = await User.findOne({email})
     if(userExiste){
         res.status(400)
-        throw new Error ("Usuario ya existe")
+        throw new Error ('Usuario ya existe')
     }
     else{
         const salt = await bcrypt.genSalt(10)
@@ -50,7 +50,7 @@ const register = asyncHandler(async (req, res) => {
         }
         else{
             res.status(400)
-            throw new Error ("No se guardaron los datos")
+            throw new Error ('No se guardaron los datos')
         }
     }
 
@@ -74,7 +74,7 @@ const login = asyncHandler(async (req, res) => {
     })
   } else {
     res.status(401)
-      throw new Error ("Contraseña o email incorrectos")
+      throw new Error ('Contraseña o email incorrectos')
   }
 
   })
@@ -90,7 +90,7 @@ const eliminarUser = asyncHandler(async (req, res) => {
 
   if (user.user.toString()!== req.user.id){
     res.status(403)
-    throw new Error("No estas autorizado para borrar ese usuario")
+    throw new Error('No estas autorizado para borrar ese usuario')
   }
 
   await User.findByIdAndDelete(req.user.id)
