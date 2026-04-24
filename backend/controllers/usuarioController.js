@@ -81,7 +81,7 @@ const login = asyncHandler(async (req, res) => {
 
 //eliminar
 const eliminarUser = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.params.id)
+  const user = await User.findById(req.params.email)
 
   if (!user) {
     res.status(404)
