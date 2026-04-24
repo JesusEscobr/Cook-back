@@ -41,7 +41,7 @@ const editarResena = asyncHandler(async (req, res) => {
     throw new Error('Reseña no encontrada')
   }
 
-  if (resena.user.toString() !== req.usuario._id.toString()) {
+  if (resena.user.toString() !== req.user._id.toString()) {
     res.status(403)
     throw new Error('Usuario no autorizado')
   }
