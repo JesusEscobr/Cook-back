@@ -10,7 +10,7 @@ const getResena = asyncHandler(async (req, res) => {
     throw new Error('Reseña no encontrada')
   }
   else{
-  res.status(200).json(Resena)
+  res.status(200).json(resena)
   }
 })
 
@@ -21,7 +21,7 @@ const crearResena = asyncHandler(async (req, res) => {
     titulo: req.body.titulo,
     contenido: req.body.contenido,
     calificacion: req.body.calificacion,
-    user: req.usuario._id,
+    user: req.user.id,
   })
   if (resena) {
     res.status(201).json(resena)
@@ -46,7 +46,7 @@ const editarResena = asyncHandler(async (req, res) => {
     throw new Error('Usuario no autorizado')
   }
 
-  const resenaEditada = await resena.findByIdAndUpdate(req.params.id, req.body, {new: true})
+  const resenaEditada = await Resena.findByIdAndUpdate(req.params.id, req.body, {new: true})
   res.status(200).json(resenaEditada)
 })
 

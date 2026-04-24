@@ -8,12 +8,12 @@ const generarToken = (id) =>{
   return jwt.sign({id}, process.env.JWT_SECRET, {expiresIn: '10d'})
 }
 
-const data =(res,req)=> {
+const data =(req,res)=> {
   res.status(200).json(req.user)
 }
 //registrar
 const register = asyncHandler(async (req, res) => {
-    const {nombre, email, password} = req.body
+    const {nombre, email, password, password2} = req.body
 
     if(password !== password2){
       res.status(400)
@@ -69,7 +69,7 @@ const login = asyncHandler(async (req, res) => {
   if (user && (await bcrypt.compare(password, user.password))) {
     res.status(200).json({
       _id: user.id,
-      nombre: user,nombre,
+      nombre: user.nombre,
       token: generarToken(user.id)
     })
   } else {
