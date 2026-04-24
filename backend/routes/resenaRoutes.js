@@ -6,6 +6,6 @@ const {protect} = require('../middleware/authMiddleware')
 router.get('/', getResena)
 router.post('/', protect, crearResena)
 router.put('/:id', protect, editarResena)
-router.delete('/:id', protect, eliminarResena)
+router.delete('/:email', protect, eliminarResena)
 
 module.exports = router

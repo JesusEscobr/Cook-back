@@ -81,19 +81,19 @@ const login = asyncHandler(async (req, res) => {
 
 //eliminar
 const eliminarUser = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.params.email)
+  const user = await User.findOne({ email: req.params.email })
 
   if (!user) {
     res.status(404)
     throw new Error('Usuario no encontrado')
   }
 
-  if (user.user.toString()!== req.user.id){
+  if (user._id.toString()!== req.user.id){
     res.status(403)
     throw new Error('No estas autorizado para borrar ese usuario')
   }
 
-  await User.findByIdAndDelete(req.user.email)
+  await User.findByIdAndDelete(user._id)
   res.status(200).json({ message: 'Usuario eliminado correctamente'})
 })
 
