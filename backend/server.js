@@ -13,13 +13,10 @@ const app = express()
 const allowedOrigins = [
   'https://jesusescobr.github.io',
   'https://jesusescobr.github.io/Cook-front',
-  'http://localhost:5500',
-  'http://127.0.0.1:5500',
 ]
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Permitir peticiones sin origin (Postman, curl, etc.)
     if (!origin) return callback(null, true)
     if (allowedOrigins.includes(origin)) return callback(null, true)
     callback(new Error(`CORS bloqueado para origen: ${origin}`))
