@@ -10,20 +10,8 @@ const port = process.env.PORT || 5000
 connectDB()
 
 const app = express()
-const allowedOrigins = [
-  'https://jesusescobr.github.io',
-  'https://jesusescobr.github.io/Cook-front',
-]
 
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin) return callback(null, true)
-    if (allowedOrigins.includes(origin)) return callback(null, true)
-    callback(new Error(`CORS bloqueado para origen: ${origin}`))
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}))
+app.use(cors())
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
