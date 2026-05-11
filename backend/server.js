@@ -2,23 +2,38 @@ const express = require('express')
 const dotenv = require('dotenv').config()
 const colors = require('colors')
 const cors = require('cors')
-const path = require('path')
 const connectDB = require('./config/db')
-const {errorHandler} = require('./middleware/errorMiddleware')
+const { errorHandler } = require('./middleware/errorMiddleware')
+
 const port = process.env.PORT || 5000
 
 connectDB()
 
 const app = express()
+const allowedOrigins = [
+  'https://jesusescobr.github.io',
+  'https://jesusescobr.github.io/Cook-front',
+  'http://localhost:5500',
+  'http://127.0.0.1:5500',
+]
 
-app.use(cors())
+app.use(cors({
+  origin: (origin, callback) => {
+    // Permitir peticiones sin origin (Postman, curl, etc.)
+    if (!origin) return callback(null, true)
+    if (allowedOrigins.includes(origin)) return callback(null, true)
+    callback(new Error(`CORS bloqueado para origen: ${origin}`))
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}))
+
 app.use(express.json())
-app.use(express.urlencoded({extended:false}))
-
-
-app.use('/api/users', require('./routes/usuarioRoutes'))
+app.use(express.urlencoded({ extended: false }))
+app.use('/api/users',   require('./routes/usuarioRoutes'))
 app.use('/api/resenas', require('./routes/resenaRoutes'))
-
-
-app.listen(port, () => console.log(`Servidor iniciado en el puerto ${port}`.green.bold))
 app.use(errorHandler)
+
+app.listen(port, () =>
+  console.log(`Servidor iniciado en el puerto ${port}`.green.bold)
+)
